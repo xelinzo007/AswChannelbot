@@ -5,28 +5,24 @@ class Data:
     # Start Message
     START = """
 Hey {}
-
 Welcome to {}
-
 You can use me to manage channels with tons of features. Use below buttons to learn more !
-
-By @StarkBots
     """
 
     # Home Button
     home_buttons = [
-        [InlineKeyboardButton(text="🏠 Return Home 🏠", callback_data="home")],
+        [InlineKeyboardButton(text="Home", callback_data="home")],
     ]
 
     # Rest Buttons
     buttons = [
-        [InlineKeyboardButton("✨ Bot Status and More Bots ✨", url="https://t.me/StarkBots/7")],
+        [InlineKeyboardButton("✖️enon ● Updates", url="https://t.me/xmusicbots")],
         [
             InlineKeyboardButton("How to Use ❔", callback_data="help"),
-            InlineKeyboardButton("🎪 About 🎪", callback_data="about")
+            InlineKeyboardButton("About ", callback_data="about")
         ],
-        [InlineKeyboardButton("♥ More Amazing bots ♥", url="https://t.me/StarkBots")],
-        [InlineKeyboardButton("🎨 Support Group 🎨", url="https://t.me/StarkBotsChat")],
+        [InlineKeyboardButton("✖️enon ● Network", url="https://t.me/Xenonbots")],
+        [InlineKeyboardButton("Support Group", url="https://t.me/Xenonsupportchat")],
     ]
 
     # Help Message
@@ -34,7 +30,7 @@ By @StarkBots
 Everything is self explanatory after you add a channel.
 To add a channel use keyboard button 'Add Channels' or alternatively for ease, use `/add` command
 
-✨ **Available Commands** ✨
+**Available Commands**
 
 /about - About The Bot
 /help - This Message
@@ -49,14 +45,6 @@ Alternative Commands
     # About Message
     ABOUT = """
 **About This Bot** 
-
-A telegram channel automation bot by @StarkBots
-
-Source Code : [Click Here](https://github.com/StarkBotsIndustries/ChannelBot)
-
-Framework : [Pyrogram](docs.pyrogram.org)
-
-Language : [Python](www.python.org)
-
-Developer : @StarkAgent
+channel auto posting bot
+from @xenonbots
     """
