@@ -26,6 +26,6 @@ else:
     BOT_TOKEN = "6520550784:AAHCm37TCQM9JsX4iV4AX6M8k3UsJ3NZKEA"
     DATABASE_URL = "postgres://cgofceil:6Hka0htlKsErFBUdYqGgNmDKQiXkiCsm@flora.db.elephantsql.com/cgofceil"
     DATABASE_URL = DATABASE_URL.replace("postgres", "postgresql")
-    MUST_JOIN = "@drewnotfound" # must join channel link here
+    MUST_JOIN = "@shutthefuckupma" # must join channel link here
     if MUST_JOIN.startswith("@"):
         MUST_JOIN = MUST_JOIN[1:]
