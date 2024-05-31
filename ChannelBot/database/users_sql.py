@@ -1,70 +1,65 @@
 import ast
-from sqlalchemy import Column, BigInteger, String
-from ChannelBot.database import BASE, SESSION
+from pymongo import MongoClient
+from Config import MONGO_URI
 
+# Connect to MongoDB
+client = MongoClient(MONGO_URI)
+db_name = MONGO_URI.split('/')[-1]
+db = client[db_name]
+users_collection = db["users"]
 
-class Users(BASE):
-    __tablename__ = "users"
-    __table_args__ = {'extend_existing': True}
-    user_id = Column(BigInteger, primary_key=True)
-    channels = Column(String, nullable=True)
-
-    def __init__(self, user_id, channels=None):
-        self.user_id = user_id
-        self.channels = channels
-
-
-Users.__table__.create(checkfirst=True)
-
+# Users class is replaced with dictionary-based approach
 
 async def num_users():
-    try:
-        return SESSION.query(Users).count()
-    finally:
-        SESSION.close()
-
+    return users_collection.count_documents({})
 
 async def add_channel(user_id, channel_id):
-    q: Users = SESSION.query(Users).get(user_id)
-    if q:
-        if q.channels:
-            channels = list(set(ast.literal_eval(q.channels)))
-            channels.append(channel_id)
-            q.channels = str(channels)
+    user = users_collection.find_one({"user_id": user_id})
+    if user:
+        if user.get("channels"):
+            channels = list(set(ast.literal_eval(user["channels"])))
+            if channel_id not in channels:
+                channels.append(channel_id)
+                users_collection.update_one({"user_id": user_id}, {"$set": {"channels": str(channels)}})
         else:
-            q.channels = str([channel_id])
+            users_collection.update_one({"user_id": user_id}, {"$set": {"channels": str([channel_id])}})
     else:
-        SESSION.add(Users(user_id))
-    SESSION.commit()
-
+        user_doc = {
+            "user_id": user_id,
+            "channels": str([channel_id])
+        }
+        users_collection.insert_one(user_doc)
 
 async def remove_channel(user_id, channel_id):
-    q = SESSION.query(Users).get(user_id)
-    if q:
-        channels = list(set(ast.literal_eval(q.channels)))
-        if q.channels and channel_id in channels:
+    user = users_collection.find_one({"user_id": user_id})
+    if user:
+        channels = list(set(ast.literal_eval(user["channels"])))
+        if user.get("channels") and channel_id in channels:
             channels.remove(channel_id)
             if len(channels) == 0:
-                q.channels = None
+                users_collection.update_one({"user_id": user_id}, {"$set": {"channels": None}})
             else:
-                q.channels = str(channels)
+                users_collection.update_one({"user_id": user_id}, {"$set": {"channels": str(channels)}})
     else:
-        SESSION.add(Users(user_id))
-    SESSION.commit()
-
+        user_doc = {
+            "user_id": user_id,
+            "channels": None
+        }
+        users_collection.insert_one(user_doc)
 
 async def get_channels(user_id):
-    q = SESSION.query(Users).get(user_id)
-    if q:
-        if q.channels:
-            # literal_eval() makes sure that the items remain of their type (here int).
-            # While list() will make items str.
-            channels = ast.literal_eval(q.channels)
-            SESSION.close()
+    user = users_collection.find_one({"user_id": user_id})
+    if user:
+        if user.get("channels"):
+            channels = ast.literal_eval(user["channels"])
             return True, channels
         else:
             return False, []
     else:
-        SESSION.add(Users(user_id))
-        SESSION.commit()
+        user_doc = {
+            "user_id": user_id,
+            "channels": None
+        }
+        users_collection.insert_one(user_doc)
         return False, []
+
